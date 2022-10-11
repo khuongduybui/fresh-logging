@@ -1,0 +1,69 @@
+version: 0.1
+actions:
+  disabled:
+    - trunk-announce
+    - trunk-check-pre-push
+    - trunk-fmt-pre-commit
+  enabled:
+    - trunk-cache-prune
+    - trunk-upgrade-available
+runtimes:
+  enabled:
+    - go@1.18.3
+    - node@16.14.2
+lint:
+  ignore:
+    - linters:
+        - prettier
+      paths:
+        - "**/*.ts"
+        - "**/*.tsx"
+        - "**/*.md"
+        - "**/*.json"
+  definitions:
+    - name: deno-ts
+      files:
+        - typescript
+      commands:
+        - run: deno fmt -
+          output: rewrite
+          stdin: true
+          formatter: true
+          success_codes:
+            - 0
+    - name: deno-md
+      files:
+        - markdown
+      commands:
+        - run: deno fmt --ext=md -
+          output: rewrite
+          stdin: true
+          formatter: true
+          success_codes:
+            - 0
+    - name: deno-json
+      files:
+        - json
+      commands:
+        - run: deno fmt --ext=json -
+          output: rewrite
+          stdin: true
+          formatter: true
+          success_codes:
+            - 0
+  enabled:
+    - codespell@2.2.1
+    - deno-ts
+    - deno-md
+    - deno-json
+    - git-diff-check
+    - gitleaks@8.8.7
+    - markdownlint@0.32.2
+    - prettier@2.7.1
+cli:
+  version: 0.18.1-beta
+plugins:
+  sources:
+    - id: plugins
+      ref: v0.0.3
+      uri: https://github.com/trunk-io/plugins
