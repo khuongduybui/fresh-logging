@@ -12,7 +12,7 @@ Add logging to your `import_map.json`.
 ```json
 {
   "imports": {
-    "$logging/": "https://raw.githubusercontent.com/khuongduybui/fresh-logging/0.0.1/"
+    "$logging/": "https://raw.githubusercontent.com/khuongduybui/fresh-logging/0.0.2/"
   }
 }
 ```
@@ -51,7 +51,23 @@ As of v0.0.1, the following fields are **completely** omitted (hard-coded to `-`
 - `bytes` (response content length): one way I can think of is to use `res.clone()` then read its as `ArrayBuffer` and get the `byteLength`, but that is both
   time and memory consuming. Until I can find a more efficient way to obtain this piece of information, omission is the decision.
 
-In the next release, a `providers` option to be added to allow custom resolutions of all the fields, including the missing ones above. Stay tuned!
+From v0.0.2, a `resolvers` option has been added to allow custom resolutions of all the fields, including the missing ones above. For example, the following
+code snippet will allow logging the response bytes:
+
+```ts
+import { getLogger, ResolutionField } from "$logging/index.ts";
+
+export const handler = [
+  getLogger({
+    resolvers: {
+      [ResolutionField.bytes]: async (_req, _ctx, res) => `${(await res.clone().arrayBuffer()).byteLength}`,
+    },
+  }),
+];
+```
+
+Again, please note that the example above only serves to illustrate how to provide customer resolvers for the missing fields, the actual implementation is
+sub-optimal. Otherwise, it would have been included as default resolver for that field.
 
 ## A note about versioning
 

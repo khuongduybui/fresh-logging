@@ -6,14 +6,29 @@ import { DateTime } from "https://esm.sh/luxon@3.0.4";
 export enum LoggingFormat {
   COMMON,
 }
+export enum ResolutionField {
+  rfc931,
+  authuser,
+  bytes,
+}
+export type resolver = (req: Request, ctx: MiddlewareHandlerContext, res: Response) => string | Promise<string>;
 export interface LoggingOpts {
   format?: LoggingFormat;
   utcTime?: boolean;
   includeDuration?: boolean;
+  resolvers?: {
+    [ResolutionField.rfc931]?: resolver;
+    [ResolutionField.authuser]?: resolver;
+    [ResolutionField.bytes]?: resolver;
+  };
 }
 export function getLogger(options?: LoggingOpts) {
   const format = options?.format ?? LoggingFormat.COMMON;
   const includeDuration = options?.includeDuration ?? true;
+  const resolvers = options?.resolvers ?? {};
+  resolvers[ResolutionField.rfc931] = resolvers[ResolutionField.rfc931] ?? (() => "-");
+  resolvers[ResolutionField.authuser] = resolvers[ResolutionField.authuser] ?? (() => "-");
+  resolvers[ResolutionField.bytes] = resolvers[ResolutionField.bytes] ?? (() => "-");
 
   if (format === LoggingFormat.COMMON) {
     return async (
@@ -31,15 +46,14 @@ export function getLogger(options?: LoggingOpts) {
         res.headers.set("Server-Timing", `handler;dur=${duration}`);
         durationText = `${duration}ms`;
       }
-      const byteLength = "-"; // @TODO: res.clone() is time-consuming, look for a better way?
       const logParts = [
         (ctx.remoteAddr as Deno.NetAddr).hostname,
-        "-",
-        "-",
+        await resolvers[ResolutionField.rfc931]?.(req, ctx, res),
+        await resolvers[ResolutionField.authuser]?.(req, ctx, res),
         `[${now.toFormat("dd/MMM/yyyy:HH:mm:ss ZZZ")}]`,
         `"${req.method} ${req.url}"`,
         res.status,
-        byteLength,
+        await resolvers[ResolutionField.bytes]?.(req, ctx, res),
         durationText,
       ];
       console.log(logParts.join(" "));
