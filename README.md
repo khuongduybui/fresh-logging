@@ -12,7 +12,7 @@ Add logging to your `import_map.json`.
 ```json
 {
   "imports": {
-    "$logging/": "https://raw.githubusercontent.com/khuongduybui/fresh-logging/0.0.2/"
+    "$logging/": "https://deno.land/x/fresh_logging@0.0.2/"
   }
 }
 ```
