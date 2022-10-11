@@ -41,6 +41,7 @@ your `handler` array will yield the time taken only by the route handler.
 | `format`          | `LoggingFormat.DEFAULT` | Default format to use, v0.0.1 only supports [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format). |
 | `utcTime`         | `false`                 | Whether to log timestamps in UTC or server timezone.                                                                                       |
 | `includeDuration` | `true`                  | Whether to include handler response time.                                                                                                  |
+| `resolvers`       | {}                      | Selectively supply customer resolvers for the missing fields. See the next section on [limitations](#limitations) for more details.        |
 
 ## Limitations
 
