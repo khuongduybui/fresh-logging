@@ -1,5 +1,4 @@
-// routes/_middleware.ts
-import { MiddlewareHandlerContext } from "$fresh/server.ts";
+import { MiddlewareHandler, MiddlewareHandlerContext } from "$fresh/server.ts";
 
 import { DateTime } from "https://esm.sh/luxon@3.0.4";
 import { ConsoleStream, Logger } from "https://deno.land/x/optic@1.3.5/mod.ts";
@@ -36,7 +35,13 @@ const _defaultLogger = new Logger("fresh-logging-default-logger").addStream(
     ),
 );
 
-export function getLogger(options?: LoggingOpts) {
+/**
+ * Get a Deno Fresh middleware that log the request / response in Common Log Format.
+ *
+ * @param options All options are optional.
+ * @returns A middleware that logs request / response in the specified format, or a no-op middleware.
+ */
+export function getLogger(options?: LoggingOpts): MiddlewareHandler {
   const format = options?.format ?? LoggingFormat.COMMON;
   const includeDuration = options?.includeDuration ?? true;
   const resolvers = options?.resolvers ?? {};
@@ -76,4 +81,9 @@ export function getLogger(options?: LoggingOpts) {
       return res;
     };
   }
+
+  // Returns a empty MiddlewareHandler if log format not support.
+  return (_req: Request, ctx: MiddlewareHandlerContext) => ctx.next();
 }
+
+export default getLogger;

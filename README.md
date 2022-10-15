@@ -12,7 +12,7 @@ Add logging to your `import_map.json`.
 ```json
 {
   "imports": {
-    "$logging/": "https://deno.land/x/fresh_logging@1.0.0/"
+    "$logging/": "https://deno.land/x/fresh_logging@1.0.1/"
   }
 }
 ```
@@ -20,7 +20,9 @@ Add logging to your `import_map.json`.
 Consume the logger in your app's `_middleware.ts`.
 
 ```ts
-import { getLogger } from "$logging/index.ts";
+import * as getLogger from "$logging/index.ts";
+// or
+// import { getLogger, ... } from "$logging/index.ts";
 
 export const handler = [
   getLogger(),
