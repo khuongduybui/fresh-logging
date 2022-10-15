@@ -36,13 +36,13 @@ your `handler` array will yield the time taken only by the route handler.
 
 `getLogger()` accepts an optional object `{}` with the following options:
 
-| Option            | Default Value                | Notes                                                                                                                                      |
-| ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `format`          | `LoggingFormat.DEFAULT`      | Default format to use, v0.0.1 only supports [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format). |
-| `utcTime`         | `false`                      | Whether to log timestamps in UTC or server timezone.                                                                                       |
-| `includeDuration` | `true`                       | Whether to include handler response time.                                                                                                  |
-| `resolvers`       | {}                           | Selectively supply customer resolvers for the missing fields. See the next section on [limitations](#limitations) for more details.        |
-| `logger`          | `console.info` +color -level | Optionally supply a custom logger function of type (message: string) => string                                                             |
+| Option            | Default Value                | Notes                                                                                                                                                   |
+| ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `format`          | `LoggingFormat.DEFAULT`      | Default format to use, v0.0.1 only supports [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format).              |
+| `utcTime`         | `false`                      | Whether to log timestamps in UTC or server timezone.                                                                                                    |
+| `includeDuration` | `true`                       | Whether to include handler response time.                                                                                                               |
+| `resolvers`       | `{}`                         | Selectively supply customer resolvers for the missing fields. See the next section on [limitations](#limitations) for more details.                     |
+| `logger`          | `console.info` +color -level | Optionally supply a custom logger function of type `(message: string) => string`. See the [logger section](#how-to-use-custom-logger) for more details. |
 
 ## Limitations
 
