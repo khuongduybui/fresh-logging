@@ -2,6 +2,8 @@
 import { MiddlewareHandlerContext } from "$fresh/server.ts";
 
 import { DateTime } from "https://esm.sh/luxon@3.0.4";
+import { ConsoleStream, Logger } from "https://deno.land/x/optic@1.3.5/mod.ts";
+import { TokenReplacer } from "https://deno.land/x/optic@1.3.5/formatters/mod.ts";
 
 export enum LoggingFormat {
   COMMON,
@@ -12,6 +14,7 @@ export enum ResolutionField {
   bytes,
 }
 export type resolver = (req: Request, ctx: MiddlewareHandlerContext, res: Response) => string | Promise<string>;
+export type logger = (message: string) => string;
 export interface LoggingOpts {
   format?: LoggingFormat;
   utcTime?: boolean;
@@ -21,7 +24,18 @@ export interface LoggingOpts {
     [ResolutionField.authuser]?: resolver;
     [ResolutionField.bytes]?: resolver;
   };
+  logger?: logger;
 }
+
+const _defaultLogger = new Logger("fresh-logging-default-logger").addStream(
+  new ConsoleStream()
+    .withFormat(
+      new TokenReplacer()
+        .withFormat("{msg}")
+        .withColor(),
+    ),
+);
+
 export function getLogger(options?: LoggingOpts) {
   const format = options?.format ?? LoggingFormat.COMMON;
   const includeDuration = options?.includeDuration ?? true;
@@ -29,6 +43,7 @@ export function getLogger(options?: LoggingOpts) {
   resolvers[ResolutionField.rfc931] = resolvers[ResolutionField.rfc931] ?? (() => "-");
   resolvers[ResolutionField.authuser] = resolvers[ResolutionField.authuser] ?? (() => "-");
   resolvers[ResolutionField.bytes] = resolvers[ResolutionField.bytes] ?? (() => "-");
+  const logger = options?.logger ?? _defaultLogger.info.bind(_defaultLogger);
 
   if (format === LoggingFormat.COMMON) {
     return async (
@@ -56,7 +71,7 @@ export function getLogger(options?: LoggingOpts) {
         await resolvers[ResolutionField.bytes]?.(req, ctx, res),
         durationText,
       ];
-      console.log(logParts.join(" "));
+      logger(logParts.join(" "));
 
       return res;
     };
