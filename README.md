@@ -12,7 +12,7 @@ Add logging to your `import_map.json`.
 ```json
 {
   "imports": {
-    "$logging/": "https://deno.land/x/fresh_logging@0.0.2/"
+    "$logging/": "https://deno.land/x/fresh_logging@1.0.0/"
   }
 }
 ```
@@ -36,12 +36,13 @@ your `handler` array will yield the time taken only by the route handler.
 
 `getLogger()` accepts an optional object `{}` with the following options:
 
-| Option            | Default Value           | Notes                                                                                                                                      |
-| ----------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `format`          | `LoggingFormat.DEFAULT` | Default format to use, v0.0.1 only supports [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format). |
-| `utcTime`         | `false`                 | Whether to log timestamps in UTC or server timezone.                                                                                       |
-| `includeDuration` | `true`                  | Whether to include handler response time.                                                                                                  |
-| `resolvers`       | {}                      | Selectively supply customer resolvers for the missing fields. See the next section on [limitations](#limitations) for more details.        |
+| Option            | Default Value                | Notes                                                                                                                                      |
+| ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `format`          | `LoggingFormat.DEFAULT`      | Default format to use, v0.0.1 only supports [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format). |
+| `utcTime`         | `false`                      | Whether to log timestamps in UTC or server timezone.                                                                                       |
+| `includeDuration` | `true`                       | Whether to include handler response time.                                                                                                  |
+| `resolvers`       | {}                           | Selectively supply customer resolvers for the missing fields. See the next section on [limitations](#limitations) for more details.        |
+| `logger`          | `console.info` +color -level | Optionally supply a custom logger function of type (message: string) => string                                                             |
 
 ## Limitations
 
@@ -69,6 +70,26 @@ export const handler = [
 
 Again, please note that the example above only serves to illustrate how to provide customer resolvers for the missing fields, the actual implementation is
 sub-optimal. Otherwise, it would have been included as default resolver for that field.
+
+## How to use custom logger
+
+Simply provide a function with the signature `(message: string) => string`, such as:
+
+```ts
+import { getLogger } from "$logging/index.ts";
+
+export const handler = [
+  getLogger({
+    logger: (message: string) => {
+      console.debug(message);
+      return message;
+    },
+  }),
+];
+```
+
+In combination with a sophisticated logging solution such as https://github.com/onjara/optic, most logging use cases (console/stdout, rotating file, cloud,
+etc.) can be implemented with relative ease.
 
 ## A note about versioning
 
