@@ -12,7 +12,7 @@ Add logging to your `import_map.json`.
 ```json
 {
   "imports": {
-    "$logging/": "https://deno.land/x/fresh_logging@1.1.0/"
+    "$logging/": "https://deno.land/x/fresh_logging@1.1.1/"
   }
 }
 ```
@@ -45,6 +45,7 @@ your `handler` array will yield the time taken only by the route handler.
 | `includeDuration` | `true`                       | Whether to include handler response time.                                                                                                               |
 | `resolvers`       | `{}`                         | Selectively supply customer resolvers for the missing fields. See the next section on [limitations](#limitations) for more details.                     |
 | `logger`          | `console.info` +color -level | Optionally supply a custom logger function of type `(message: string) => string`. See the [logger section](#how-to-use-custom-logger) for more details. |
+| `combinedHeaders` | ["Referer", "User-agent"]    | Optionally supply custom request headers to include. Requires specifying `format` to be `LoggingFormat.APACHE_COMBINED`.                                |
 
 ## Limitations
 
@@ -92,7 +93,7 @@ export const handler = [
 In combination with a sophisticated logging solution such as https://github.com/onjara/optic, most logging use cases (console/stdout, rotating file, cloud,
 etc.) can be implemented with relative ease.
 
-## Add support for [Apache Combined Log Format](https://httpd.apache.org/docs/2.4/logs.html#:~:text=%25B%20instead.-,Combined%20Log%20Format,-Another%20commonly%20used)
+## Use [Apache Combined Log Format](https://httpd.apache.org/docs/2.4/logs.html#:~:text=%25B%20instead.-,Combined%20Log%20Format,-Another%20commonly%20used)
 
 Specify `LoggingFormat.APACHE_COMBINED` for the `format` option like this:
 
