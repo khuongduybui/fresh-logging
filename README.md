@@ -12,7 +12,7 @@ Add logging to your `import_map.json`.
 ```json
 {
   "imports": {
-    "$logging/": "https://deno.land/x/fresh_logging@1.0.1/"
+    "$logging/": "https://deno.land/x/fresh_logging@1.1.0/"
   }
 }
 ```
@@ -48,15 +48,14 @@ your `handler` array will yield the time taken only by the route handler.
 
 ## Limitations
 
-As of v0.0.1, the following fields are **completely** omitted (hard-coded to `-`):
+As of v1.1.0, the following fields are **completely** omitted (hard-coded to `-`):
 
 - `rfc931` (client identifier): not sure how to obtain this
 - `authuser` (user identifier): not sure how to obtain this either
 - `bytes` (response content length): one way I can think of is to use `res.clone()` then read its as `ArrayBuffer` and get the `byteLength`, but that is both
   time and memory consuming. Until I can find a more efficient way to obtain this piece of information, omission is the decision.
 
-From v0.0.2, a `resolvers` option has been added to allow custom resolutions of all the fields, including the missing ones above. For example, the following
-code snippet will allow logging the response bytes:
+Users can use the `resolvers` to provide custom resolutions of the missing fields. For example, the following code snippet allows logging the response bytes:
 
 ```ts
 import { getLogger, ResolutionField } from "$logging/index.ts";
@@ -75,7 +74,7 @@ sub-optimal. Otherwise, it would have been included as default resolver for that
 
 ## How to use custom logger
 
-Simply provide a function with the signature `(message: string) => string`, such as:
+Simply provide the `logger` option a function with the signature `(message: string) => string`, such as:
 
 ```ts
 import { getLogger } from "$logging/index.ts";
@@ -95,7 +94,7 @@ etc.) can be implemented with relative ease.
 
 ## Add support for [Apache Combined Log Format](https://httpd.apache.org/docs/2.4/logs.html#:~:text=%25B%20instead.-,Combined%20Log%20Format,-Another%20commonly%20used)
 
-Provide the `format` option with `LoggingFormat.APACHE_COMBINED` like this:
+Specify `LoggingFormat.APACHE_COMBINED` for the `format` option like this:
 
 ```ts
 import { getLogger, LoggingFormat } from "$logging/index.ts";
