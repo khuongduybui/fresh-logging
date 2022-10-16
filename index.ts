@@ -50,40 +50,41 @@ export function getLogger(options?: LoggingOpts): MiddlewareHandler {
   resolvers[ResolutionField.bytes] = resolvers[ResolutionField.bytes] ?? (() => "-");
   const logger = options?.logger ?? _defaultLogger.info.bind(_defaultLogger);
 
-  if (format === LoggingFormat.COMMON) {
-    return async (
-      req: Request,
-      ctx: MiddlewareHandlerContext,
-    ): Promise<Response> => {
-      const now = options?.utcTime ? DateTime.utc() : DateTime.now();
+  switch (format) {
+    case LoggingFormat.COMMON:
+      return async (
+        req: Request,
+        ctx: MiddlewareHandlerContext,
+      ): Promise<Response> => {
+        const now = options?.utcTime ? DateTime.utc() : DateTime.now();
 
-      const start = performance.now();
-      const res = await ctx.next();
-      const end = performance.now();
-      const duration = (end - start).toFixed(1);
-      let durationText = "";
-      if (includeDuration) {
-        res.headers.set("Server-Timing", `handler;dur=${duration}`);
-        durationText = `${duration}ms`;
-      }
-      const logParts = [
-        (ctx.remoteAddr as Deno.NetAddr).hostname,
-        await resolvers[ResolutionField.rfc931]?.(req, ctx, res),
-        await resolvers[ResolutionField.authuser]?.(req, ctx, res),
-        `[${now.toFormat("dd/MMM/yyyy:HH:mm:ss ZZZ")}]`,
-        `"${req.method} ${req.url}"`,
-        res.status,
-        await resolvers[ResolutionField.bytes]?.(req, ctx, res),
-        durationText,
-      ];
-      logger(logParts.join(" "));
+        const start = performance.now();
+        const res = await ctx.next();
+        const end = performance.now();
+        const duration = (end - start).toFixed(1);
+        let durationText = "";
+        if (includeDuration) {
+          res.headers.set("Server-Timing", `handler;dur=${duration}`);
+          durationText = `${duration}ms`;
+        }
+        const logParts = [
+          (ctx.remoteAddr as Deno.NetAddr).hostname,
+          await resolvers[ResolutionField.rfc931]?.(req, ctx, res),
+          await resolvers[ResolutionField.authuser]?.(req, ctx, res),
+          `[${now.toFormat("dd/MMM/yyyy:HH:mm:ss ZZZ")}]`,
+          `"${req.method} ${req.url}"`,
+          res.status,
+          await resolvers[ResolutionField.bytes]?.(req, ctx, res),
+          durationText,
+        ];
+        logger(logParts.join(" "));
 
-      return res;
-    };
+        return res;
+      };
+    default:
+      // Returns a empty MiddlewareHandler if log format not support.
+      return (_req: Request, ctx: MiddlewareHandlerContext) => ctx.next();
   }
-
-  // Returns a empty MiddlewareHandler if log format not support.
-  return (_req: Request, ctx: MiddlewareHandlerContext) => ctx.next();
 }
 
 export default getLogger;
