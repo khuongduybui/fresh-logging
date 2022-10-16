@@ -6,6 +6,7 @@ import { TokenReplacer } from "https://deno.land/x/optic@1.3.5/formatters/mod.ts
 
 export enum LoggingFormat {
   COMMON,
+  APACHE_COMBINED,
 }
 export enum ResolutionField {
   rfc931,
@@ -75,6 +76,38 @@ export function getLogger(options?: LoggingOpts): MiddlewareHandler {
           `"${req.method} ${req.url}"`,
           res.status,
           await resolvers[ResolutionField.bytes]?.(req, ctx, res),
+          durationText,
+        ];
+        logger(logParts.join(" "));
+
+        return res;
+      };
+    case LoggingFormat.APACHE_COMBINED:
+      return async (
+        req: Request,
+        ctx: MiddlewareHandlerContext,
+      ): Promise<Response> => {
+        const now = options?.utcTime ? DateTime.utc() : DateTime.now();
+
+        const start = performance.now();
+        const res = await ctx.next();
+        const end = performance.now();
+        const duration = (end - start).toFixed(1);
+        let durationText = "";
+        if (includeDuration) {
+          res.headers.set("Server-Timing", `handler;dur=${duration}`);
+          durationText = `${duration}ms`;
+        }
+        const logParts = [
+          (ctx.remoteAddr as Deno.NetAddr).hostname,
+          await resolvers[ResolutionField.rfc931]?.(req, ctx, res),
+          await resolvers[ResolutionField.authuser]?.(req, ctx, res),
+          `[${now.toFormat("dd/MMM/yyyy:HH:mm:ss ZZZ")}]`,
+          `"${req.method} ${req.url}"`,
+          res.status,
+          await resolvers[ResolutionField.bytes]?.(req, ctx, res),
+          req.headers.get("Referer") ? `"${req.headers.get("Referer")}"` : "-",
+          req.headers.get("User-agent") ? `"${req.headers.get("User-agent")}"` : "-",
           durationText,
         ];
         logger(logParts.join(" "));

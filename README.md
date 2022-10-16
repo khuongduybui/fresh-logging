@@ -93,6 +93,22 @@ export const handler = [
 In combination with a sophisticated logging solution such as https://github.com/onjara/optic, most logging use cases (console/stdout, rotating file, cloud,
 etc.) can be implemented with relative ease.
 
+## Add support for [Apache Combined Log Format](https://httpd.apache.org/docs/2.4/logs.html#:~:text=%25B%20instead.-,Combined%20Log%20Format,-Another%20commonly%20used)
+
+Use `LoggingFormat.APACHE_COMBINED` like this:
+
+```ts
+import { getLogger, LoggingFormat } from "$logging/index.ts";
+
+export const handler = [
+  getLogger({
+    format: LoggingFormat.APACHE_COMBINED,
+  }),
+];
+```
+
+The default two headers included are "Referer" and "User-agent". In future releases, this might be customizable.
+
 ## A note about versioning
 
 For now, the versions are `a.b.c-x.y.z` where `a.b.c` is the plugin version and `x.y.z` is the supported Turnstile API version. For example, `0.0.1-0` is the
