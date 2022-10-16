@@ -95,7 +95,7 @@ etc.) can be implemented with relative ease.
 
 ## Add support for [Apache Combined Log Format](https://httpd.apache.org/docs/2.4/logs.html#:~:text=%25B%20instead.-,Combined%20Log%20Format,-Another%20commonly%20used)
 
-Use `LoggingFormat.APACHE_COMBINED` like this:
+Provide the `format` option with `LoggingFormat.APACHE_COMBINED` like this:
 
 ```ts
 import { getLogger, LoggingFormat } from "$logging/index.ts";
@@ -107,7 +107,8 @@ export const handler = [
 ];
 ```
 
-The default two headers included are "Referer" and "User-agent". In future releases, this might be customizable.
+The default two headers included are "Referer" and "User-agent". You can override that by optionally providing the `combinedHeaders` option, which expects a
+string array of length 2.
 
 ## A note about versioning
 

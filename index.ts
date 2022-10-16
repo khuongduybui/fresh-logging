@@ -25,6 +25,7 @@ export interface LoggingOpts {
     [ResolutionField.bytes]?: resolver;
   };
   logger?: logger;
+  combinedHeaders?: string[];
 }
 
 const _defaultLogger = new Logger("fresh-logging-default-logger").addStream(
@@ -50,6 +51,7 @@ export function getLogger(options?: LoggingOpts): MiddlewareHandler {
   resolvers[ResolutionField.authuser] = resolvers[ResolutionField.authuser] ?? (() => "-");
   resolvers[ResolutionField.bytes] = resolvers[ResolutionField.bytes] ?? (() => "-");
   const logger = options?.logger ?? _defaultLogger.info.bind(_defaultLogger);
+  const combinedHeaders = options?.combinedHeaders ?? ["Referer", "User-agent"];
 
   switch (format) {
     case LoggingFormat.COMMON:
@@ -106,10 +108,9 @@ export function getLogger(options?: LoggingOpts): MiddlewareHandler {
           `"${req.method} ${req.url}"`,
           res.status,
           await resolvers[ResolutionField.bytes]?.(req, ctx, res),
-          req.headers.get("Referer") ? `"${req.headers.get("Referer")}"` : "-",
-          req.headers.get("User-agent") ? `"${req.headers.get("User-agent")}"` : "-",
-          durationText,
-        ];
+        ]
+          .concat(combinedHeaders.slice(0, 2).map((header) => req.headers.has(header) ? `"${req.headers.get(header)}"` : "-"))
+          .concat([durationText]);
         logger(logParts.join(" "));
 
         return res;
