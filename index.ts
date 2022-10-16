@@ -54,7 +54,7 @@ const _durationCalculator = async (callable: () => Promise<unknown>) => {
 export function getLogger(options?: LoggingOpts): MiddlewareHandler {
   // Populate default values for options
   const format = options?.format ?? LoggingFormat.COMMON;
-  const includeDuration = options?.includeDuration ?? true;
+  const includeDuration = options?.includeDuration ?? false;
   const resolvers = options?.resolvers ?? {};
   const logger = options?.logger ?? _defaultLogger.info.bind(_defaultLogger);
   const combinedHeaders = options?.combinedHeaders ?? ["Referer", "User-agent"];

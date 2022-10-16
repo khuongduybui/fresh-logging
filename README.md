@@ -12,12 +12,12 @@ Add logging to your `import_map.json`.
 ```json
 {
   "imports": {
-    "$logging/": "https://deno.land/x/fresh_logging@1.1.1/"
+    "$logging/": "https://deno.land/x/fresh_logging@1.1.2/"
   }
 }
 ```
 
-Consume the logger in your app's `_middleware.ts`.
+Consume the logger in your app's `routes/_middleware.ts`.
 
 ```ts
 import * as getLogger from "$logging/index.ts";
@@ -30,9 +30,9 @@ export const handler = [
 ];
 ```
 
-**Note**: if `includeDuration` option is ON (which is the default behavior), `getLogger()` will also count the time taken by all of its subsequent middlewares.
-For example, putting `getLogger()` at the beginning of your `handler` array will count the time taken by all middlewares, while putting it at the very end of
-your `handler` array will yield the time taken only by the route handler.
+**Note**: if `includeDuration` option is ON, `getLogger()` will also count the time taken by all of its subsequent middlewares. For example, putting
+`getLogger()` at the beginning of your `handler` array will count the time taken by all middlewares, while putting it at the very end of your `handler` array
+will yield the time taken only by the route handler.
 
 ## Options
 
@@ -40,16 +40,16 @@ your `handler` array will yield the time taken only by the route handler.
 
 | Option            | Default Value                | Notes                                                                                                                                                   |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `format`          | `LoggingFormat.DEFAULT`      | Default format to use, v0.0.1 only supports [Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format).              |
+| `format`          | `LoggingFormat.COMMON`       | The log format to use, defaulting to the [W3C Common Log Format](https://www.w3.org/Daemon/User/Config/Logging.html#common-logfile-format).             |
 | `utcTime`         | `false`                      | Whether to log timestamps in UTC or server timezone.                                                                                                    |
-| `includeDuration` | `true`                       | Whether to include handler response time.                                                                                                               |
+| `includeDuration` | `false`                      | Whether to include handler response time.                                                                                                               |
 | `resolvers`       | `{}`                         | Selectively supply customer resolvers for the missing fields. See the next section on [limitations](#limitations) for more details.                     |
 | `logger`          | `console.info` +color -level | Optionally supply a custom logger function of type `(message: string) => string`. See the [logger section](#how-to-use-custom-logger) for more details. |
-| `combinedHeaders` | ["Referer", "User-agent"]    | Optionally supply custom request headers to include. Requires specifying `format` to be `LoggingFormat.APACHE_COMBINED`.                                |
+| `combinedHeaders` | ["Referer", "User-agent"]    | Optionally supply custom request headers to include. Requires setting `format: LoggingFormat.APACHE_COMBINED`.                                          |
 
 ## Limitations
 
-As of v1.1.0, the following fields are **completely** omitted (hard-coded to `-`):
+As of v1.1.2, the following fields are **completely** omitted (hard-coded to `-`):
 
 - `rfc931` (client identifier): not sure how to obtain this
 - `authuser` (user identifier): not sure how to obtain this either
