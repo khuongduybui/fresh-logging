@@ -69,6 +69,3 @@ plugins:
     - id: trunk
       ref: v0.0.5
       uri: https://github.com/trunk-io/plugins
-    - id: plugins
-      ref: v0.0.5
-      uri: https://github.com/trunk-io/plugins
