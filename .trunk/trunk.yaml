@@ -63,9 +63,12 @@ lint:
     - markdownlint@0.32.2
     - prettier@2.7.1
 cli:
-  version: 0.18.1-beta
+  version: 1.0.1
 plugins:
   sources:
+    - id: trunk
+      ref: v0.0.5
+      uri: https://github.com/trunk-io/plugins
     - id: plugins
       ref: v0.0.5
       uri: https://github.com/trunk-io/plugins
