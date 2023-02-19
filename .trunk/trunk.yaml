@@ -53,19 +53,19 @@ lint:
           success_codes:
             - 0
   enabled:
-    - cspell@6.18.0
+    - cspell@6.26.3
     - codespell@2.2.2
     - deno-ts
     - deno-md
     - deno-json
     - git-diff-check
-    - gitleaks@8.15.2
-    - markdownlint@0.32.2
-    - prettier@2.8.1
+    - gitleaks@8.15.3
+    - markdownlint@0.33.0
+    - prettier@2.8.4
 cli:
-  version: 1.2.1
+  version: 1.5.0
 plugins:
   sources:
     - id: trunk
-      ref: v0.0.8
+      ref: v0.0.11
       uri: https://github.com/trunk-io/plugins
